@@ -13,7 +13,6 @@ export default function MyNav(props) {
     const handleBrowseType = () => {
         setBrowseTypeModalShow(!browseTypeModalShow);
     }
-    console.log(browseTypeModalShow)
     return (
         <div>
             <VehicleTypeModal show={browseTypeModalShow}

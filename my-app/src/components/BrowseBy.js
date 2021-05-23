@@ -53,8 +53,8 @@ export default function() {
                 <Col>
                     <h1> Browse by Vehicle Name </h1>
                     {
-                        letters.map((category) => (
-                            <Button id={category} onClick={handleClick} variant={"link"}>{category}</Button>
+                        letters.map((category, index) => (
+                            <Button id={category} key={index} onClick={handleClick} variant={"link"}>{category}</Button>
                         ))
                     }
                 </Col>

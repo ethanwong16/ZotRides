@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {Button, Col, Row, Jumbotron, Container} from 'react-bootstrap';
 import {Typeahead} from "react-bootstrap-typeahead";
 import './stylesheets/Home.css';
@@ -16,8 +16,12 @@ export default function Home() {
     const [cache, setCache] = useState({});
     const [activeIndex, setActiveIndex] = useState(-1);
 
-    function onChange(input) {
-        setText(input.toLowerCase());
+    useEffect(() => {
+        const timeOutId = setTimeout(() => runQuery(text), 300);
+        return () => clearTimeout(timeOutId);
+    }, [text]);
+
+    function runQuery(input) {
         var match = "";
         if(input.length >= 3 && Object.keys(cache).some((element) => {
             match = element;
@@ -47,6 +51,10 @@ export default function Home() {
         } else {
             setOptions([]);
         }
+    }
+
+    function onChange(input) {
+        setText(input.toLowerCase());
     }
     function onSelect(input) {
         setSingleSelections(input);

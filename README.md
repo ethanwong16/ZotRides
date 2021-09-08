@@ -1,15 +1,13 @@
 - # General
-    - #### Team#: 16
+    - #### Project Members: Ethan Wong, Jonthan Vo
     
-    - #### Names: Ethan Wong, Jonthan Vo
-    
-    - #### Project 5 Video Demo Link: https://youtu.be/iEx2SnGjb7I
+    - #### Load Balancing / Stress Test Demo Link: https://youtu.be/iEx2SnGjb7I
 
     - #### Instruction of deployment: 
-      Our project 5 is based off of provided examples, so similarly to deploy on our AWS instance, one would just have to install and configure Tomcat, use Maven to create the package, copy it to the Tomcat apps folder, and then go to the Tomcat manager portal and click to the URL of the website.  Our app uses the React front-end framework, but we have already included the build folder and set up everything to use it as the source directory for deployment.
+      To deploy on our AWS instance, one would just have to install and configure Tomcat, use Maven to create the package, copy it to the Tomcat apps folder, and then go to the Tomcat manager portal and click to the URL of the website.  Our app uses the React front-end framework, but we have already included the build folder and set up everything to use it as the source directory for deployment.
 
-    - #### Collaborations and Work Distribution: 
-      Ethan worked on implementing connection pooling, updating the servlets to route to the appropriate master / slave instances, and worked together with Jonathan to set up the AWS load balanced infrastructure, set up binary log replication, and run and analyze the JMeter test cases.
+    - #### Member Contributions: 
+      Ethan worked on implementing connection pooling, updating the servlets to route to the appropriate master / slave instances, and worked together with Jonathan to set up the AWS load balanced infrastructure, set up binary log replication, and run and analyze the JMeter test cases.  Jonathan took the lead on developing the front-end and connecting user actions to jQuery API calls.
     
     - #### Notes:
       The current commit reflects that of what is deployed on the master instance and has connection pooling, manual mySQL routing in servlets, and HTTP (not HTTPS since it was optional) enabled.
@@ -23,15 +21,15 @@
       Configure Connection Pooling : [context.xml](https://github.com/UCI-Chenli-teaching/cs122b-spring21-team-16/blob/e6ad6a1891a7e09996a79e950998f99b0e510959/my-app/public/META-INF/context.xml)      
       The servlets using connection pooling to establish connections are shown in the  master/slave section.     
 
-    - #### Explain how Connection Pooling is utilized in the ZotRides code.
+    - #### ZotRides Connection Pooling.
       Our ZotRides web application uses connection pooling to reduce the overhead of having to create and release resources for a new Connection every time we want to run a query to our mySQL database.  With connection pooling, we create and maintain a pool of up to 100 connections throughout the lifecycle of our web application’s deployment.  This way, whenever a servlet wants to run a query to the database, it can use a pre-setup connection from the pool of the data source it wants to connect to and put it back when it is finished using it.  We configured our data source(s) to use connection pooling in context.xml by adding lines to specify the data source factory and settings for maxTotal, maxIdle, and maxWaitMillis.  We also set up our connection pooling to allow at most 30 connections to be idle to prevent excess pools of connections and waste resources.  We also enabled the connection pools to cache prepared statements to ensure PreparedStatements are using the correct connection they were associated with.
     
-    - #### Explain how Connection Pooling works with two backend SQL.
+    - #### Connection Pooling + Master-Slave Architecture.
       With two backend SQL databases, they are each hosted on separate servers (the master and slave servers) and thus require different data sources.  We integrated two connection pools, one with the data source for the master server and another with the data source for the slave server.  We updated context.xml to use two data sources, one named zotrides-master and another one named zotrides-slave.  We updated the data source URLs to include the private IP addresses for the master and slave AWS instance servers, as the master and slave databases were located on their respective servers.  We also registered these two data sources in web.xml.  Connection pooling also saves a pool of connections to use, but this time there are two pools for each data source. 
     
 
 - # Master/Slave
-    - #### Include the filename/path of all code/configuration files in GitHub of routing queries to Master/Slave SQL.
+    - #### Filenames/paths of all code/configuration files in GitHub of routing queries to Master/Slave SQL.
       [AddCarServlet.java](https://github.com/UCI-Chenli-teaching/cs122b-spring21-team-16/blob/e6ad6a1891a7e09996a79e950998f99b0e510959/src/main/java/com/example/zotrides/AddCarServlet.java)   
       [AddLocationServlet.java](https://github.com/UCI-Chenli-teaching/cs122b-spring21-team-16/blob/e6ad6a1891a7e09996a79e950998f99b0e510959/src/main/java/com/example/zotrides/AddLocationServlet.java)    
       [AppLogin.java](https://github.com/UCI-Chenli-teaching/cs122b-spring21-team-16/blob/e6ad6a1891a7e09996a79e950998f99b0e510959/src/main/java/com/example/zotrides/AppLogin.java)  
@@ -50,12 +48,12 @@
       [SingleLocationServlet.java](https://github.com/UCI-Chenli-teaching/cs122b-spring21-team-16/blob/e6ad6a1891a7e09996a79e950998f99b0e510959/src/main/java/com/example/zotrides/SingleLocationServlet.java)  
       [SortServlet.java](https://github.com/UCI-Chenli-teaching/cs122b-spring21-team-16/blob/e6ad6a1891a7e09996a79e950998f99b0e510959/src/main/java/com/example/zotrides/SortServlet.java)
 
-    - #### How read/write requests were routed to Master/Slave SQL?
+    - #### Master/Slave SQL Routing
       We required all write requests to utilize connections from the zotrides-master data source, which is the data source that connects to the mySQL database on the master server.  This would result in all update / insertion queries updating the master mySQL database, which would replicate over to the slave instance via binary logging.  For read requests, we split up requests between master and slave servers by updating our Java servlets to create connections through different data sources in different endpoints.  For those servlets that only had one endpoint, we evenly split read queries between master and slave data sources.  
     
 
 - # JMeter TS/TJ Time Logs
-    - #### Instructions of how to use the `log_processing.*` script to process the JMeter logs.
+    - #### How to use the `log_processing.*` script to process the JMeter logs.
       The log processing script is in the root directory under the name [*log_processing.py*](https://github.com/UCI-Chenli-teaching/cs122b-spring21-team-16/blob/e6ad6a1891a7e09996a79e950998f99b0e510959/log_processing.py) <br><br>
       The log_processing script iterates through the generated log file. First, the user must insert the log file into the same directory as the python script. The user must point the file reader to the location of the log text file. Then the user must run the python script. The python script will print the calculated averages into the console after iterating through every single line of the log file. 
 
